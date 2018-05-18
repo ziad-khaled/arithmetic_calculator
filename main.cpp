@@ -8,17 +8,20 @@ struct Token
 	string value;
 
 	Token (char t)
+	{
 		type = t;
+	}
+		
 
 	Token(char t, string v)
 	{
 		type = t;
 		value = v;
 	}
-}
+};
 
 // Check if enterred character is an operator.
-bool is_operator(char x)
+bool is_operand(char x)
 {
 	switch(x)
 	{
@@ -29,9 +32,9 @@ bool is_operator(char x)
 		case '/':
 		case '+':
 		case '-':
-			return true;
-		default:
 			return false;
+		default:
+			return true;
 	}
 }
 
@@ -65,10 +68,9 @@ int get_precedence(char x)
 }
 
 int main()
-{	
-	const char TOKEN_END = "_";
-	const char NUMBER = 'n';
-	const char OPERATOR = 'o';
+{		
+	const char OPERAND = 'N';
+	const char OPERATOR = 'R';
 
 	string infix_expression;
 	cin>>infix_expression;
@@ -76,17 +78,30 @@ int main()
 	stack <char> operators;
 
 	vector <Token> postfix_expression;
-	int operand_place = 0;
+	int current_operand_place = 0;
+
+	bool after_operator = true;
+
 	for(char x : infix_expression)
 	{	
-		// check if x is a number if yes conactenate it to current operand
-		if(!is_operator(x))
-		{
-			postfix_expression[operand_place].type = NUMBER;
-			postfix_expression[operand_place].value += x;
+		// check if x is a number if yes conactenate it to the current operand token
+		if(is_operand(x))
+		{	
+			string current_operand;
+			current_operand += x;
+
+			if(after_operator)
+			{
+				postfix_expression.push_back(* new Token(OPERAND, current_operand));
+				after_operator = false;
+			}
+			else
+				postfix_expression[current_operand_place].value += current_operand;
 		}
 		else
-		{	Token operator_token = new Token(OPERATOR);
+		{	
+			after_operator = true;
+
 			switch(x)
 			{
 				case '(':
@@ -94,8 +109,7 @@ int main()
 				break;
 
 				case ')':
-					
-					
+
 					while(operators.top() != '(')
 					{	
 						/*
@@ -105,11 +119,12 @@ int main()
 							and add one to the operand place t
 						*/
 
-						operator_token.value += operators.top();
-						postfix_expression.push_back(temp_token)
-						operator_token.value.clear();
+						string current_operator;
+						current_operator.push_back(operators.top());	
 
-						operand_place++;
+						postfix_expression.push_back( * new Token(OPERATOR,current_operator));
+					
+						current_operand_place++;
 
 						operators.pop();
 					}
@@ -119,11 +134,13 @@ int main()
 
 				default:
 					if(operators.empty() || operators.top() == '(' || get_precedence(operators.top()) < get_precedence(x))
+					{
 						operators.push(x);
+					}	
 					else
 					{	
 						
-						while(get_precedence(operators.top()) >= get_precedence(x)))
+						while(get_precedence(operators.top()) >= get_precedence(x))
 						{	
 							/*
 						 	add the top element in the operators stack to the token value 
@@ -132,14 +149,14 @@ int main()
 							and add one to the operand place t
 							*/
 
-							operator_token.value += operators.top();
-							postfix_expression.push_back(temp_token)
-							operator_token.value.clear();
+							string current_operator;
+							current_operator.push_back(operators.top());	
 
-							operand_place++;
+							postfix_expression.push_back( * new Token(OPERATOR,current_operator));
+					
+							current_operand_place++;
 
 							operators.pop();
-								
 						}
 						operators.push(x);	
 					}
@@ -151,18 +168,21 @@ int main()
 	}
 
 	//While operators stack still has elements in it pop and push in the postfix expression
-	{
-		char current_operator;
-		while(!operators.empty())
-		{	
-			current_operator = operators.top();
-			postfix_expression.push_back(current_operator);
+	
+		
+	while(!operators.empty())
+	{	
+			string current_operator;
+			current_operator += operators.top();
+			postfix_expression.push_back(* new Token(OPERATOR, current_operator));
 			operators.pop();
-		}
 	}
-
 	
 
+	for(Token temp : postfix_expression)
+		cout<<temp.value<<" ";
+	
+	cout<<endl;
 	return 0;
 	
 }
