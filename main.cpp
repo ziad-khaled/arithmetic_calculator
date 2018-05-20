@@ -107,7 +107,6 @@ vector<Token> to_postfix(vector<Token> infix_tokens)
 
 	for(Token t : infix_tokens )
 	{	
-        cout<<t.value<<" in the loop\n";
 		// check if the current token is a number if yes added it to the postfix tokens
 		if(t.type==OPERAND)
             postfix_tokens.push_back(t);
@@ -122,7 +121,6 @@ vector<Token> to_postfix(vector<Token> infix_tokens)
 				break;
 
 				case ')':
-
 					while(operators.top().value[0] != '(')
 					{		
                         postfix_tokens.push_back(operators.top());		
@@ -132,7 +130,6 @@ vector<Token> to_postfix(vector<Token> infix_tokens)
 				break;
 
 				default:
-                    
 					if(operators.empty() || operators.top().value[0] == '(' || get_precedence(operators.top().value[0]) < get_precedence(current_operator))
 						operators.push(t);
 			
@@ -166,12 +163,13 @@ vector<Token> to_postfix(vector<Token> infix_tokens)
 int main()
 {
     string expression;
+    cout<<">> ";
     cin>>expression;
-    cout<<"read\n";
+
     vector <Token> infix_tokens = tokenize(expression);
-    cout<<"tokenized\n";
+    
     vector <Token> postfix_tokens = to_postfix(infix_tokens);
-    cout<<"to postfix\n";
+    cout<<"postfix: ";
     for(Token t : postfix_tokens)
         cout<<t.value<<" ";
 
