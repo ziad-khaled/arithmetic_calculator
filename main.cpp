@@ -107,13 +107,14 @@ vector<Token> to_postfix(vector<Token> infix_tokens)
 
 	for(Token t : infix_tokens )
 	{	
+		
 		// check if the current token is a number if yes added it to the postfix tokens
 		if(t.type==OPERAND)
             postfix_tokens.push_back(t);
 		else
 		{	
             char current_operator = t.value[0];
-
+			
 			switch(current_operator)
 			{
 				case '(':
@@ -121,7 +122,7 @@ vector<Token> to_postfix(vector<Token> infix_tokens)
 				break;
 
 				case ')':
-					while(operators.top().value[0] != '(')
+					while(!operators.empty() && operators.top().value[0] != '(')
 					{		
                         postfix_tokens.push_back(operators.top());		
 						operators.pop();
@@ -161,19 +162,28 @@ vector<Token> to_postfix(vector<Token> infix_tokens)
 }
 
 int main()
-{
-    string expression;
-    cout<<">> ";
-    cin>>expression;
+{	
+	char continue_program;
+    do
+	{
+		string expression;
+		cout<<">> ";
+		cin>>expression;
 
-    vector <Token> infix_tokens = tokenize(expression);
-    
-    vector <Token> postfix_tokens = to_postfix(infix_tokens);
-    cout<<"postfix: ";
-    for(Token t : postfix_tokens)
-        cout<<t.value<<" ";
+		vector <Token> infix_tokens = tokenize(expression);
+		
+		vector <Token> postfix_tokens = to_postfix(infix_tokens);
+		cout<<"postfix: ";
+		for(Token t : postfix_tokens)
+			cout<<t.value<<" ";
 
-    cout<<endl;
+		cout<<endl;
 
+		cout<<"\nDo you want to continue?y/n ";
+		cin>>continue_program;
+		cout<<endl;
+	}while(continue_program == 'y');
+
+	cout<<"Goodbye!\n";
     return 0;
 }
