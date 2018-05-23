@@ -147,7 +147,6 @@ vector<Token> to_postfix(vector<Token> infix_tokens)
 			
 		}
 		
-
 	}
 
 	//While operators stack still has elements in it pop and push in the postfix expression	
