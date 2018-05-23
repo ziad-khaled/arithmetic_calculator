@@ -77,6 +77,7 @@ vector<Token> tokenize(string expression)
 	Return opertar precedence to know operator order of operationand as we know from maths classes 
     () come first then ^ then /* then +- 
 */
+
 int get_precedence(char x)
 {
 	switch(x)
@@ -106,8 +107,7 @@ vector<Token> to_postfix(vector<Token> infix_tokens)
 	vector <Token> postfix_tokens;
 
 	for(Token t : infix_tokens )
-	{	
-		
+	{			
 		// check if the current token is a number if yes added it to the postfix tokens
 		if(t.type==OPERAND)
             postfix_tokens.push_back(t);
@@ -136,7 +136,6 @@ vector<Token> to_postfix(vector<Token> infix_tokens)
 			
 					else
 					{	
-						
 						while(!operators.empty() && get_precedence(operators.top().value[0]) >= get_precedence(current_operator))
 						{				
 							postfix_tokens.push_back(operators.top());				
@@ -161,9 +160,22 @@ vector<Token> to_postfix(vector<Token> infix_tokens)
     return postfix_tokens;
 }
 
+double evaluate(vector<Token> postfix_tokens)
+{
+	double result = 0;
+	stack<Token> evaluation_stack;
+
+
+
+
+
+	return 0;
+}
+
 int main()
 {	
 	char continue_program;
+
     do
 	{
 		string expression;
@@ -185,5 +197,6 @@ int main()
 	}while(continue_program == 'y');
 
 	cout<<"Goodbye!\n";
+
     return 0;
 }
