@@ -159,23 +159,55 @@ vector<Token> to_postfix(vector<Token> infix_tokens)
 	
     return postfix_tokens;
 }
-
+double get_value(double val1, double val2, char current_operator)
+{
+	switch(current_operator)
+	{
+		case '+':
+			return val2 + val1;
+		case '-':
+			return val2 - val1;
+		case '*':
+			return val2 * val1;
+		case '/':
+			return val2 / val1;
+		case '^':
+			return pow(val2, val1);
+	}
+}
 double evaluate(vector<Token> postfix_tokens)
 {
 	double result = 0;
 	stack<Token> evaluation_stack;
 
+	for(Token t : postfix_tokens)
+	{
+		if(t.type == OPERAND)
+			evaluation_stack.push(t);
+		else
+		{
+			double val1 = stod(evaluation_stack.top().value);
+			evaluation_stack.pop();
 
+			double val2 = stod(evaluation_stack.top().value);
+			evaluation_stack.pop();
 
+			result = get_value(val1, val2, t.value[0]);
 
+			evaluation_stack.push(*new Token(OPERAND, to_string(result)));
+		}
+	}
 
-	return 0;
+	result = stod(evaluation_stack.top().value);
+
+	return result;
 }
+
 
 int main()
 {	
 	char continue_program;
-
+	
     do
 	{
 		string expression;
@@ -190,6 +222,7 @@ int main()
 			cout<<t.value<<" ";
 
 		cout<<endl;
+		cout<<"= "<<evaluate(postfix_tokens)<<"\n";
 
 		cout<<"\nDo you want to continue?y/n ";
 		cin>>continue_program;
