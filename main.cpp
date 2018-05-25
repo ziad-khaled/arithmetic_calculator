@@ -25,7 +25,8 @@ struct Token
 
 // Check if enterred character is an operator.
 bool is_operator(char x)
-{
+{   
+    bool is_operator;
 	switch(x)
 	{
 		case '(':
@@ -35,10 +36,13 @@ bool is_operator(char x)
 		case '/':
 		case '+':
 		case '-':
-			return true;
+			is_operator = true;
+        break;
 		default:
-			return false;
+			is_operator = false;
 	}
+	
+	return is_operator;
 }
 
 // Get tokens from the expression to be able to deal later with each token individually
@@ -79,24 +83,30 @@ vector<Token> tokenize(string expression)
 */
 
 int get_precedence(char x)
-{
+{   
+    int precedence;
 	switch(x)
 	{
 		case '(':
 		case ')':
-			return 4;
-		
+			precedence = 4;
+		break;
+        
 		case '^':
-			return 3;
-		
+			precedence = 3;
+        break;
+        
 		case '*':
 		case '/':
-			return 2;cout<<endl;
-		
+			precedence = 2;
+        break;
+        
 		case '+':
 		case '-':
-			return 1;		
+			precedence = 1;		
 	}
+	
+	return precedence;
 }
 
 vector<Token> to_postfix(vector<Token> infix_tokens)
@@ -105,14 +115,25 @@ vector<Token> to_postfix(vector<Token> infix_tokens)
 	stack <Token> operators;
 
 	vector <Token> postfix_tokens;
-
-	for(Token t : infix_tokens )
-	{			
+	int power_num = 0;
+	for(int i =0, l = infix_tokens.size(); i < l; i++)
+	{	
+		Token t = infix_tokens[i];
+		if(i<l-1 && infix_tokens[i+1].value=="^")
+			power_num++;
 		// check if the current token is a number if yes added it to the postfix tokens
 		if(t.type==OPERAND)
             postfix_tokens.push_back(t);
-		else
+		else if(t.value != "^")
 		{	
+			while(power_num>0)
+			{	
+				string temp;
+				temp += "^";
+				postfix_tokens.push_back(*new Token(OPERATOR, temp));
+                power_num--;
+			}
+			
             char current_operator = t.value[0];
 			
 			switch(current_operator)
@@ -127,7 +148,8 @@ vector<Token> to_postfix(vector<Token> infix_tokens)
                         postfix_tokens.push_back(operators.top());		
 						operators.pop();
 					}
-					operators.pop();
+					if(!operators.empty())
+                        operators.pop();
 				break;
 
 				default:
@@ -138,7 +160,8 @@ vector<Token> to_postfix(vector<Token> infix_tokens)
 					{	
 						while(!operators.empty() && get_precedence(operators.top().value[0]) >= get_precedence(current_operator))
 						{				
-							postfix_tokens.push_back(operators.top());				
+							if(operators.top().value[0] != '(')
+                                postfix_tokens.push_back(operators.top());				
 							operators.pop();
 						}
 						operators.push(t);	
@@ -155,24 +178,43 @@ vector<Token> to_postfix(vector<Token> infix_tokens)
 		postfix_tokens.push_back(operators.top());
 		operators.pop();
 	}
+
+	while(power_num>0)
+	{	
+		string temp;
+		temp += "^";
+		postfix_tokens.push_back(*new Token(OPERATOR, temp));
+        power_num--;
+	}
 	
     return postfix_tokens;
 }
 double get_value(double val1, double val2, char current_operator)
-{
+{   
+    double value;
 	switch(current_operator)
 	{
 		case '+':
-			return val2 + val1;
+			value = val2 + val1;
+        break;
+        
 		case '-':
-			return val2 - val1;
+            value = val2 - val1;
+        break;
+        
 		case '*':
-			return val2 * val1;
-		case '/':
-			return val2 / val1;
+			value = val2 * val1;
+        break;
+        
+        case '/':
+			value = val2 / val1;
+        break;
+        
 		case '^':
-			return pow(val2, val1);
+			value = pow(val2, val1);
 	}
+	
+	return value;
 }
 double evaluate(vector<Token> postfix_tokens)
 {
